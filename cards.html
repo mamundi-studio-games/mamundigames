@@ -1,0 +1,200 @@
+<!doctype html><html><head><meta charset=utf8><meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"><script>/*zoomlock*/(function(){var d=document,p=function(e){e.preventDefault()};['gesturestart','gesturechange','gestureend'].forEach(function(t){d.addEventListener(t,p)});d.addEventListener('touchmove',function(e){if(e.touches.length>1||(e.scale&&e.scale!==1))e.preventDefault()},{passive:false});d.addEventListener('dblclick',p);d.addEventListener('wheel',function(e){if(e.ctrlKey)e.preventDefault()},{passive:false});d.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&['+','-','=','0'].indexOf(e.key)>=0)e.preventDefault()})})();</script><style>html{touch-action:manipulation;-webkit-text-size-adjust:100%}</style><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>کارتی شۆڕشگێڕان</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@600;700&family=Vazirmatn:wght@400;600;800&display=swap">
+<style>
+/* Layout: one centred column. Title band, two team plates facing each other, then a grid of cards that flip to show a leader's name. */
+:root{
+  --ink:#120f0c;--night:#1b1612;--panel:#241c16;--line:#4a3a28;
+  --paper:#f7edd5;--paper-ink:#2a1c0f;
+  --red:#d8262f;--green:#1f9a4d;--sun:#f5c542;--mute:#bba98a;--text:#f6ecd6;
+  --display:'Noto Naskh Arabic','Vazirmatn',Tahoma,serif;
+  --body:'Vazirmatn',Tahoma,'Segoe UI',sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:var(--ink) radial-gradient(120% 55% at 50% 0,#3b2b1c,var(--ink) 72%) no-repeat;color:var(--text);font-family:var(--body);line-height:1.6}
+.wrap{max-width:720px;margin:0 auto;padding-inline:16px;padding-block:0 32px}
+.flag{height:10px;background:linear-gradient(var(--red) 33.3%,#fff 33.3% 66.6%,var(--green) 66.6%);margin-inline:-16px}
+header{display:flex;align-items:center;justify-content:center;gap:14px;padding-block:18px 6px}
+header svg{width:52px;height:52px;flex:none}
+h1{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(28px,7vw,40px);color:var(--sun);text-wrap:balance;line-height:1.2}
+.sub{margin:0 0 14px;text-align:center;color:var(--mute);font-size:14px}
+
+.teams{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.team{position:relative;min-width:0;background:var(--panel);border:2px solid var(--line);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;transition:border-color .25s,box-shadow .25s,transform .25s}
+.team.t0{--tc:var(--red)}.team.t1{--tc:var(--green)}
+.team.on{border-color:var(--tc);box-shadow:0 0 0 3px color-mix(in srgb,var(--tc) 30%,transparent),0 10px 26px rgba(0,0,0,.45);transform:translateY(-2px)}
+.team input{all:unset;box-sizing:border-box;width:100%;font:800 15px var(--body);color:var(--text);border-bottom:1px dashed var(--line);padding-block:2px}
+.team input:focus-visible{border-bottom-color:var(--sun)}
+.score{font:800 38px/1.1 var(--body);color:var(--tc);font-variant-numeric:tabular-nums}
+.turn{font-size:12px;color:var(--mute);min-height:19px}
+.team.on .turn{color:var(--tc);filter:brightness(1.35);font-weight:600}
+.team::before{content:'';position:absolute;inset-inline-start:0;top:14px;bottom:14px;width:4px;border-radius:2px;background:var(--tc)}
+
+.bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-block:14px 10px}
+.seg{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px}
+.seg button{border:0;background:none;color:var(--mute);font:600 14px var(--body);min-width:44px;padding:6px 10px;border-radius:8px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sun);color:#2b1d06}
+.seg button:focus-visible,.btn:focus-visible,.card:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.seg.cats{flex-wrap:wrap}.seg.cats button{min-width:0;padding:6px 12px}
+.lbl{font-size:13px;color:var(--mute)}
+.btn{border:0;border-radius:12px;padding:9px 18px;background:linear-gradient(#f3c25a,#cf9226);color:#2b1d06;font:800 14px var(--body);cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.btn:active{transform:translateY(1px)}
+
+.status{min-height:30px;text-align:center;font-weight:600;font-size:15px;color:var(--sun);margin-block:4px 10px}
+
+.board{display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:10px;direction:rtl}
+.card{container-type:inline-size;aspect-ratio:3/4;perspective:800px;border:0;background:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;min-width:0}
+.in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.3,.7,.2,1)}
+.card.open .in,.card.done .in{transform:rotateY(180deg)}
+.card:not(.open):not(.done):hover .in{transform:translateY(-3px) rotateZ(-1deg)}
+.face{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+.back{background:radial-gradient(circle at 50% 42%,#2f6b45,#123a26 70%);border:2px solid var(--sun);box-shadow:0 6px 14px rgba(0,0,0,.5),inset 0 0 0 4px #123a26,inset 0 0 0 5px rgba(245,197,66,.55)}
+.back svg{position:absolute;left:50%;top:50%;width:72%;transform:translate(-50%,-50%);opacity:.95}
+.back::after{content:'';position:absolute;inset-inline:0;bottom:0;height:7%;background:linear-gradient(90deg,var(--red) 33.3%,#fff 33.3% 66.6%,var(--green) 66.6%)}
+.front{transform:rotateY(180deg);background:linear-gradient(160deg,#fffaf0,var(--paper));color:var(--paper-ink);border:2px solid #d9c18a;display:flex;align-items:center;justify-content:center;padding:18% 8% 14%;text-align:center;box-shadow:0 6px 14px rgba(0,0,0,.5)}
+.front::before{content:'';position:absolute;inset-inline:0;top:0;height:11%;background:linear-gradient(var(--red) 33.3%,#fff 33.3% 66.6%,var(--green) 66.6%)}
+.front svg{position:absolute;left:50%;bottom:4%;width:26%;transform:translateX(-50%);opacity:.5}
+.name{position:relative;z-index:1;font-family:var(--display);font-weight:700;font-size:15.5cqw;line-height:1.35;text-wrap:balance;overflow-wrap:anywhere}
+.card.done.t0 .front{border-color:var(--red);box-shadow:0 0 0 3px rgba(216,38,47,.55),0 0 22px rgba(245,197,66,.45)}
+.card.done.t1 .front{border-color:var(--green);box-shadow:0 0 0 3px rgba(31,154,77,.6),0 0 22px rgba(245,197,66,.45)}
+.card.done.pop .in{animation:pop .6s .45s}
+@keyframes pop{40%{transform:rotateY(180deg) scale(1.08)}}
+
+.ov{position:fixed;inset:0;z-index:20;background:rgba(10,6,3,.88);display:flex;align-items:center;justify-content:center;padding:20px}
+.pn{width:100%;max-width:380px;text-align:center;background:linear-gradient(#2a1d13,#1c130d);border:1px solid #c9a13b;border-radius:22px;padding:24px 20px;box-shadow:0 14px 34px rgba(0,0,0,.6)}
+.pn svg{width:84px;height:84px}
+.pn h2{margin:6px 0 2px;font-family:var(--display);font-size:32px;color:var(--sun);text-wrap:balance}
+.pn p{margin:4px 0 16px;color:#e8d9b5}
+.res{display:flex;justify-content:center;gap:24px;margin-block:8px 18px;font-weight:800;font-size:26px;font-variant-numeric:tabular-nums}
+.res span{display:block;font-size:12px;font-weight:400;color:var(--mute)}
+@media (min-width:640px){.board[data-n="20"]{--cols:5}.board{gap:14px}}
+@media (prefers-reduced-motion:reduce){.in{transition:none}.card.done.pop .in{animation:none}.team{transition:none}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="sun" viewBox="-50 -50 100 100"></symbol></defs></svg>
+
+<div class="wrap">
+  <div class="flag"></div>
+  <header>
+    <svg viewBox="-50 -50 100 100" aria-hidden="true"><use href="#sun"/></svg>
+    <h1>کارتی شۆڕشگێڕان</h1>
+  </header>
+  <p class="sub">دوو کارتی هاوناو بدۆزەرەوە. هەر تیمێک جووتێک بدۆزێتەوە، دووبارە نۆبەی دەبێت.</p>
+
+  <section class="teams" aria-label="تیمەکان">
+    <div class="team t0" id="tm0"><input id="n0" value="تیمی سوور" maxlength="14" aria-label="ناوی تیمی یەکەم"><div class="score" id="s0">٠</div><div class="turn" id="u0"></div></div>
+    <div class="team t1" id="tm1"><input id="n1" value="تیمی سەوز" maxlength="14" aria-label="ناوی تیمی دووەم"><div class="score" id="s1">٠</div><div class="turn" id="u1"></div></div>
+  </section>
+
+  <div class="bar"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="lbl">بابەت</span><div class="seg cats" id="cats"></div></div></div>
+  <div class="bar" style="margin-top:0">
+    <div style="display:flex;align-items:center;gap:8px"><span class="lbl">ژمارەی کارت</span><div class="seg" id="seg"></div></div>
+    <button class="btn" id="again" type="button">یاری نوێ</button>
+  </div>
+
+  <div class="status" id="st" aria-live="polite"></div>
+  <div class="board" id="bd"></div>
+</div>
+
+<div class="ov" id="ov" hidden>
+  <div class="pn" role="dialog" aria-modal="true" aria-labelledby="wt">
+    <svg viewBox="-50 -50 100 100" aria-hidden="true"><use href="#sun"/></svg>
+    <h2 id="wt"></h2>
+    <p id="wd"></p>
+    <div class="res"><div style="color:var(--red)" id="r0"></div><div style="color:var(--green)" id="r1"></div></div>
+    <button class="btn" id="again2" type="button">یاری دووبارە</button>
+  </div>
+</div>
+
+<script>
+var CATS={
+lead:{l:'سەرکردەکان',n:['شێخ سەعیدی پیران','سمکۆی شکاک','دیاکۆ','شێخ عوبەیدوڵای نەهری','بەدرخان بەگ','ئیبراهیم خانی دەلۆ','ئەردەشێر','قازی محمد','سەڵاحەدینی ئەیوبی','کەیخسروە']},
+fruit:{l:'میوە',n:['سێو','پرتەقاڵ','مۆز','ترێ','هەنار','شووتی','هەنجیر','گێلاس','شەفتالوو','کیوی','زەردەلوو','گێزەر']},
+city:{l:'شار',n:['هەولێر','سلێمانی','دهۆک','کەرکووک','هەڵەبجە','زاخۆ','ڕانیە','کۆیە','شەقڵاوە','سنە','مەهاباد','دیاربەکر']},
+land:{l:'وڵات',n:['عێراق','ئێران','تورکیا','سووریا','میسر','ئەڵمانیا','فەڕەنسا','بەریتانیا','ژاپۆن','چین','هیندستان','ئەمریکا']},
+animal:{l:'ئاژەڵ',n:['شێر','ئەسپ','گورگ','ڕێوی','کەروێشک','فیل','ورچ','کەو','بزن','مانگا','ماسی','قاز']}
+};
+var SIZES=[8,12,16,20];
+var G={cat:'lead',size:16,cards:[],open:[],lock:false,turn:0,sc:[0,0],left:0};
+var $=function(i){return document.getElementById(i)};
+function fa(n){return String(n).replace(/\d/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d]})}
+
+(function sunSymbol(){
+  var c=Math.cos,n=Math.sin,o='<g fill="#f5c542" stroke="#c9961a" stroke-width=".6"><circle r="20"/>';
+  for(var i=0;i<21;i++){var a=i*2*Math.PI/21;
+    o+='<path d="M'+c(a-.11)*23+' '+n(a-.11)*23+'L'+c(a)*47+' '+n(a)*47+'L'+c(a+.11)*23+' '+n(a+.11)*23+'Z"/>'}
+  $('sun').innerHTML=o+'</g>';
+})();
+
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function tname(i){return ($('n'+i).value||'').trim()||(i?'تیمی دووەم':'تیمی یەکەم')}
+
+function start(){
+  var pairs=G.size/2,pick=shuffle(CATS[G.cat].n.slice()).slice(0,pairs),list=[];
+  pick.forEach(function(nm){list.push({n:nm,id:list.length});list.push({n:nm,id:list.length})});
+  G.cards=shuffle(list).map(function(c,i){return {n:c.n,i:i,open:false,done:false,t:-1}});
+  G.open=[];G.lock=false;G.turn=0;G.sc=[0,0];G.left=pairs;
+  $('ov').hidden=true;
+  $('st').textContent='کارتێک هەڵبدەرەوە';
+  draw();ui();
+}
+function draw(){
+  var b=$('bd');b.dataset.n=G.size;b.style.setProperty('--cols',4);
+  b.innerHTML=G.cards.map(function(c){
+    return '<button class="card" type="button" data-i="'+c.i+'" aria-label="کارتی '+fa(c.i+1)+'"><div class="in">'+
+    '<div class="face back"><svg viewBox="-50 -50 100 100" aria-hidden="true"><use href="#sun"/></svg></div>'+
+    '<div class="face front"><span class="name">'+c.n+'</span><svg viewBox="-50 -50 100 100" aria-hidden="true"><use href="#sun"/></svg></div></div></button>'}).join('');
+}
+function el(i){return $('bd').children[i]}
+function ui(){
+  for(var t=0;t<2;t++){
+    $('s'+t).textContent=fa(G.sc[t]);
+    $('tm'+t).classList.toggle('on',G.turn==t);
+    $('u'+t).textContent=G.turn==t?'نۆبەی ئێستایە':'';
+  }
+}
+function flip(i){
+  if(G.lock)return;var c=G.cards[i];if(c.open||c.done)return;
+  c.open=true;el(i).classList.add('open');G.open.push(c);
+  if(G.open.length<2)return;
+  var a=G.open[0],b=G.open[1];G.open=[];
+  if(a.n===b.n){
+    G.lock=true;
+    setTimeout(function(){
+      [a,b].forEach(function(x){x.done=true;x.t=G.turn;var e=el(x.i);e.classList.remove('open');e.classList.add('done','pop','t'+G.turn)});
+      G.sc[G.turn]++;G.left--;
+      $('st').textContent='ئافەرین '+tname(G.turn)+'! '+a.n+' دۆزرایەوە';
+      G.lock=false;ui();
+      if(!G.left)setTimeout(finish,1100);
+    },650);
+  }else{
+    G.lock=true;
+    setTimeout(function(){
+      a.open=b.open=false;el(a.i).classList.remove('open');el(b.i).classList.remove('open');
+      G.turn=1-G.turn;G.lock=false;
+      $('st').textContent='نۆبەی '+tname(G.turn);ui();
+    },1050);
+  }
+}
+function finish(){
+  var a=G.sc[0],b=G.sc[1];
+  if(a==b){$('wt').textContent='یەکسان بوون';$('wd').textContent='هەردوو تیم بە یەک ژمارە کۆتاییان هێنا.'}
+  else{var w=a>b?0:1;$('wt').textContent=tname(w)+' بردیەوە';$('wd').textContent='پیرۆزە بۆ هەموو ئەو کەسانەی ناوی شۆڕشگێڕانیان بەبیر هێنایەوە.'}
+  $('r0').innerHTML=fa(a)+'<span>'+tname(0)+'</span>';
+  $('r1').innerHTML=fa(b)+'<span>'+tname(1)+'</span>';
+  $('ov').hidden=false;
+}
+$('bd').addEventListener('click',function(e){var b=e.target.closest('.card');if(b)flip(+b.dataset.i)});
+$('again').onclick=start;$('again2').onclick=start;
+$('cats').innerHTML=Object.keys(CATS).map(function(k){return '<button type="button" data-k="'+k+'" aria-pressed="'+(k==G.cat)+'">'+CATS[k].l+'</button>'}).join('');
+$('cats').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;G.cat=b.dataset.k;
+  Array.prototype.forEach.call($('cats').children,function(x){x.setAttribute('aria-pressed',x===b)});start()});
+$('seg').innerHTML=SIZES.map(function(n){return '<button type="button" data-n="'+n+'" aria-pressed="'+(n==G.size)+'">'+fa(n)+'</button>'}).join('');
+$('seg').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;G.size=+b.dataset.n;
+  Array.prototype.forEach.call($('seg').children,function(x){x.setAttribute('aria-pressed',x===b)});start()});
+start();
+</script>
+
+</body></html>
